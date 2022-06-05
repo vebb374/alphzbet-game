@@ -61,4 +61,10 @@ $palceholder-grey: #a9a29c;
       padding: 0rem 1rem;
     }
   }
+  .stats-container {
+    text-align: center;
+    .time-taken {
+      font-weight: 600;
+    }
+  }
 }

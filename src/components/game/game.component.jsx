@@ -1,6 +1,7 @@
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import "./game.styles.scss";
 import { CHALLENGE_LENGTH, PENALITY } from "../../constants";
+import { useReward } from "react-rewards";
 
 function Game() {
   //current index of the challenge string
@@ -14,6 +15,11 @@ function Game() {
   const [BestTime, setBestTime] = useState(0.0);
 
   const inputRef = useRef(null);
+
+  const { reward: confettiReward } = useReward("rewardId", "confetti", {
+    angle: 90,
+    spread: 360,
+  });
 
   //function to initialize challenge string and focus on input field
   const startGame = () => {
@@ -74,7 +80,10 @@ function Game() {
       if (Counter === CHALLENGE_LENGTH - 1) {
         const Timetaken = performance.now() - CurrentTime;
         handleTimeTaken(Timetaken);
-        resetData();
+        confettiReward();
+        setTimeout(() => {
+          resetData();
+        }, 300);
       } else {
         setCounter(Counter + 1);
       }
@@ -93,11 +102,11 @@ function Game() {
   return (
     <div className="wrapper">
       <div className="alphabet-container">
-        <h1>{Challenge[Counter]}</h1>
+        <h1 id="rewardId">{Challenge[Counter]}</h1>
       </div>
       <div className="stats-container">
-        <span>Time: {Timetaken} s </span>
-        <span>my best time: {BestTime} s!</span>
+        <p className="time-taken">Time: {Timetaken} s </p>
+        <p>my best time: {BestTime} s!</p>
       </div>
       <span className={"disabled-text" + (IsDisabled ? "" : " invisible")}>
         Incorrect
@@ -113,7 +122,7 @@ function Game() {
           type="text"
           placeholder="Type here"
         />
-        <button class="reset-button" onClick={resetData}>
+        <button className="reset-button" onClick={resetData}>
           Reset
         </button>
       </div>
