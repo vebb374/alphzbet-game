@@ -95,7 +95,7 @@ function Game() {
   };
 
   const handleTimeTaken = (Timetaken) => {
-    const timeinseconds = (Timetaken / 1000).toFixed(3);
+    const timeinseconds = (Timetaken / 100).toFixed(3);
     if (BestTime === 0 || timeinseconds < BestTime) {
       setBestTime(timeinseconds);
       localStorage.setItem("UserBestTime", JSON.stringify(timeinseconds));
