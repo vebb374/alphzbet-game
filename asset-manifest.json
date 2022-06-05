@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/alphzbet-game/static/css/main.2222952d.css",
-    "main.js": "/alphzbet-game/static/js/main.fc887ec8.js",
+    "main.js": "/alphzbet-game/static/js/main.c5947f3c.js",
     "static/js/787.0cbdd04e.chunk.js": "/alphzbet-game/static/js/787.0cbdd04e.chunk.js",
     "index.html": "/alphzbet-game/index.html",
     "main.2222952d.css.map": "/alphzbet-game/static/css/main.2222952d.css.map",
-    "main.fc887ec8.js.map": "/alphzbet-game/static/js/main.fc887ec8.js.map",
+    "main.c5947f3c.js.map": "/alphzbet-game/static/js/main.c5947f3c.js.map",
     "787.0cbdd04e.chunk.js.map": "/alphzbet-game/static/js/787.0cbdd04e.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.2222952d.css",
-    "static/js/main.fc887ec8.js"
+    "static/js/main.c5947f3c.js"
   ]
 }
