@@ -1,0 +1,64 @@
+$green: #078c32;
+$peach: #f9f3e6;
+$red: #f0416a;
+$palceholder-grey: #a9a29c;
+.wrapper {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  .alphabet-container {
+    text-align: center;
+    background-color: white;
+    color: $green;
+    width: 80%;
+    border-radius: 1rem;
+    margin: 1rem;
+    h1 {
+      font-size: 3rem;
+    }
+  }
+  .disabled-text {
+    margin-top: 1rem;
+    color: red;
+    font-weight: 600;
+  }
+  .invisible {
+    visibility: hidden;
+  }
+  .user-input-container {
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+
+    .user-input {
+      background-color: $peach;
+      text-align: center;
+      font-weight: 800;
+      height: 2rem;
+      color: black;
+      margin: 0;
+      border: 0;
+      &:focus {
+        border-color: $green;
+        outline: none;
+      }
+      &::placeholder {
+        color: $palceholder-grey;
+        font-weight: 600;
+      }
+    }
+    .reset-button {
+      background-color: $red;
+      color: white;
+      font-weight: 600;
+      border: none;
+      outline: none;
+      margin: 0;
+      height: 2rem;
+      padding: 0rem 1rem;
+    }
+  }
+}

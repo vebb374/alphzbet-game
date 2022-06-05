@@ -1,16 +1,21 @@
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
+import "./game.styles.scss";
 import { CHALLENGE_LENGTH, PENALITY } from "../../constants";
 
 function Game() {
-  const [counter, setCounter] = useState(0);
+  //current index of the challenge string
+  const [Counter, setCounter] = useState(0);
+  //Time taken to complete the Challenge
   const [Timetaken, setTimeTaken] = useState(0);
-  const [time, setTime] = useState();
+  const [CurrentTime, setCurrentTime] = useState();
   const [Challenge, setChallenge] = useState("");
   const [IsDisabled, setIsDisabled] = useState(false);
-  const inputRef = useRef(null);
   const [InputField, setInputField] = useState("");
   const [BestTime, setBestTime] = useState(0.0);
 
+  const inputRef = useRef(null);
+
+  //function to initialize challenge string and focus on input field
   const startGame = () => {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let result = "";
@@ -19,13 +24,13 @@ function Game() {
       result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     setChallenge(result);
-    setTime(0);
+    setCurrentTime(0);
     inputRef.current.focus();
     setIsDisabled(false);
     setInputField("");
   };
 
-  //initilizing game at opening of website
+  //initilizing game and retreiving previous best at opening of website
   useLayoutEffect(() => {
     startGame();
     try {
@@ -38,21 +43,22 @@ function Game() {
     }
   }, []);
 
+  //focus on the input whenever the penality is over
   useEffect(() => {
     if (!IsDisabled) {
       inputRef.current.focus();
     }
   }, [IsDisabled]);
 
+  //function to  reset state values and start a new game
   const resetData = () => {
-    setTime(0);
+    setCurrentTime(0);
     setCounter(0);
     startGame();
   };
 
   const handleTimeTaken = (Timetaken) => {
     const timeinseconds = (Timetaken / 1000).toFixed(3);
-
     if (BestTime === 0 || timeinseconds < BestTime) {
       setBestTime(timeinseconds);
       localStorage.setItem("UserBestTime", JSON.stringify(timeinseconds));
@@ -61,16 +67,16 @@ function Game() {
   };
 
   const handleKey = (e) => {
-    if (time === 0) {
-      setTime(performance.now());
+    if (CurrentTime === 0) {
+      setCurrentTime(performance.now());
     }
-    if (e.key.toUpperCase() === Challenge[counter]) {
-      if (counter === CHALLENGE_LENGTH - 1) {
-        const Timetaken = performance.now() - time;
+    if (e.key.toUpperCase() === Challenge[Counter]) {
+      if (Counter === CHALLENGE_LENGTH - 1) {
+        const Timetaken = performance.now() - CurrentTime;
         handleTimeTaken(Timetaken);
         resetData();
       } else {
-        setCounter(counter + 1);
+        setCounter(Counter + 1);
       }
     } else {
       setIsDisabled(true);
@@ -81,29 +87,35 @@ function Game() {
   };
 
   const handleInputChange = (e) => {
-    setInputField(e.target.value);
+    setInputField(e.target.value.toUpperCase());
   };
 
   return (
     <div className="wrapper">
       <div className="alphabet-container">
-        <h1>{Challenge[counter]}</h1>
+        <h1>{Challenge[Counter]}</h1>
       </div>
       <div className="stats-container">
         <span>Time: {Timetaken} s </span>
         <span>my best time: {BestTime} s!</span>
       </div>
-      {IsDisabled ? <span style={{ color: "red" }}>Incorrect</span> : null}
+      <span className={"disabled-text" + (IsDisabled ? "" : " invisible")}>
+        Incorrect
+      </span>
       <div className="user-input-container">
         <input
+          className="user-input"
           disabled={IsDisabled}
           ref={inputRef}
           onKeyDown={handleKey}
           onChange={handleInputChange}
           value={InputField}
           type="text"
+          placeholder="Type here"
         />
-        <button onClick={resetData}>reset</button>
+        <button class="reset-button" onClick={resetData}>
+          Reset
+        </button>
       </div>
     </div>
   );

@@ -1,5 +1,5 @@
-import Game from "./components/game/game.jsx";
-
+import Game from "./components/game/game.component";
+import "./App.scss"
 function App() {
   return (
     <div className="App">
