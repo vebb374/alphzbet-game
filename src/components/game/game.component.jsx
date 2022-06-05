@@ -9,25 +9,31 @@ function Game() {
   //Time taken to complete the Challenge
   const [Timetaken, setTimeTaken] = useState(0);
   const [CurrentTime, setCurrentTime] = useState();
-  const [Challenge, setChallenge] = useState("");
+  const [Challenge, setChallenge] = useState([]);
   const [IsDisabled, setIsDisabled] = useState(false);
   const [InputField, setInputField] = useState("");
   const [BestTime, setBestTime] = useState(0.0);
 
   const inputRef = useRef(null);
 
-  const { reward: confettiReward } = useReward("rewardId", "confetti", {
-    angle: 90,
-    spread: 360,
-  });
+  const { reward: confettiReward, isAnimating } = useReward(
+    "rewardId",
+    "confetti",
+    {
+      angle: 90,
+      spread: 360,
+    }
+  );
 
   //function to initialize challenge string and focus on input field
   const startGame = () => {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    let result = "";
+    let result = [];
     const charactersLength = characters.length;
     for (let i = 0; i < CHALLENGE_LENGTH; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      result.push(
+        characters.charAt(Math.floor(Math.random() * charactersLength))
+      );
     }
     setChallenge(result);
     setCurrentTime(0);
@@ -76,17 +82,16 @@ function Game() {
     if (CurrentTime === 0) {
       setCurrentTime(performance.now());
     }
-    if (e.key.toUpperCase() === Challenge[Counter]) {
+    if (Counter === CHALLENGE_LENGTH) {
+      setIsDisabled(true);
+    } else if (e.key.toUpperCase() === Challenge[Counter]) {
       if (Counter === CHALLENGE_LENGTH - 1) {
         const Timetaken = performance.now() - CurrentTime;
         handleTimeTaken(Timetaken);
         confettiReward();
-        setTimeout(() => {
-          resetData();
-        }, 300);
-      } else {
-        setCounter(Counter + 1);
+        setChallenge((Challenge) => [...Challenge, "Success !"]);
       }
+      setCounter(Counter + 1);
     } else {
       setIsDisabled(true);
       setTimeout(() => {
@@ -99,6 +104,7 @@ function Game() {
     setInputField(e.target.value.toUpperCase());
   };
 
+  console.log(Challenge);
   return (
     <div className="wrapper">
       <div className="alphabet-container">
