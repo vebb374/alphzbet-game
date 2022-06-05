@@ -14,7 +14,8 @@ function Game() {
   const [InputField, setInputField] = useState("");
   const [BestTime, setBestTime] = useState(0.0);
 
-  const inputRef = useRef(null);
+  //reference for the Input field
+  const InputRef = useRef(null);
 
   const { reward: confettiReward } = useReward(
     "rewardId",
@@ -22,6 +23,7 @@ function Game() {
     CONFETTI_CONFIG
   );
 
+  //update time every 10 milliseconds
   useEffect(() => {
     let interval;
     if (IsRunning) {
@@ -45,7 +47,7 @@ function Game() {
       );
     }
     setChallenge(result);
-    inputRef.current.focus();
+    InputRef.current.focus();
     setIsDisabled(false);
     setInputField("");
   };
@@ -66,21 +68,23 @@ function Game() {
   //focus on the input whenever the penality is over
   useEffect(() => {
     if (!IsDisabled) {
-      inputRef.current.focus();
+      InputRef.current.focus();
     }
   }, [IsDisabled]);
 
+  //disabling user to type after game has ended
   useEffect(() => {
     if (Counter === CHALLENGE_LENGTH) {
       setIsDisabled(true);
     }
   }, [Counter]);
 
+  //Confetti effect
   useEffect(() => {
     if (Challenge[Challenge.length - 1] === "Success !" && !IsRunning) {
       confettiReward();
     }
-  }, [Challenge, IsRunning]);
+  }, [Challenge, IsRunning, confettiReward]);
 
   //function to  reset state values and start a new game
   const resetData = () => {
@@ -98,7 +102,7 @@ function Game() {
     }
   };
 
-  const handleKey = (e) => {
+  const handleKeyDown = (e) => {
     if (!IsDisabled) {
       setTime(0);
       setIsRunning(true);
@@ -130,7 +134,7 @@ function Game() {
       </div>
       <div className="stats-container">
         <p className="time-taken">
-          <span>
+          <span aria-details="seconds">
             time: {("0" + Math.floor((Time / 60000) % 60)).slice(-2)}:
           </span>
           <span>{("0" + Math.floor((Time / 1000) % 60)).slice(-2)}:</span>
@@ -149,8 +153,8 @@ function Game() {
         <input
           className="user-input"
           disabled={IsDisabled}
-          ref={inputRef}
-          onKeyDown={handleKey}
+          ref={InputRef}
+          onKeyDown={handleKeyDown}
           onChange={handleInputChange}
           value={InputField}
           type="text"

@@ -1,4 +1,4 @@
-const CHALLENGE_LENGTH = 3;
+const CHALLENGE_LENGTH = 20;
 const PENALITY = 500;
 const CONFETTI_CONFIG = {
   angle: 90,
