@@ -1,0 +1,4 @@
+const CHALLENGE_LENGTH = 3;
+const PENALITY = 500;
+
+export { CHALLENGE_LENGTH, PENALITY };
