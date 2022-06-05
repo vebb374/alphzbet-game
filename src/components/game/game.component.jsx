@@ -1,14 +1,14 @@
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import "./game.styles.scss";
-import { CHALLENGE_LENGTH, PENALITY } from "../../constants";
+import { CHALLENGE_LENGTH, PENALITY, CONFETTI_CONFIG } from "../../constants";
 import { useReward } from "react-rewards";
 
 function Game() {
   //current index of the challenge string
   const [Counter, setCounter] = useState(0);
   //Time taken to complete the Challenge
-  const [Timetaken, setTimeTaken] = useState(0);
-  const [CurrentTime, setCurrentTime] = useState();
+  const [Time, setTime] = useState(0);
+  const [IsRunning, setIsRunning] = useState(false);
   const [Challenge, setChallenge] = useState([]);
   const [IsDisabled, setIsDisabled] = useState(false);
   const [InputField, setInputField] = useState("");
@@ -16,14 +16,23 @@ function Game() {
 
   const inputRef = useRef(null);
 
-  const { reward: confettiReward, isAnimating } = useReward(
+  const { reward: confettiReward } = useReward(
     "rewardId",
     "confetti",
-    {
-      angle: 90,
-      spread: 360,
-    }
+    CONFETTI_CONFIG
   );
+
+  useEffect(() => {
+    let interval;
+    if (IsRunning) {
+      interval = setInterval(() => {
+        setTime((prevTime) => prevTime + 10);
+      }, 10);
+    } else if (!IsRunning) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [IsRunning]);
 
   //function to initialize challenge string and focus on input field
   const startGame = () => {
@@ -36,7 +45,6 @@ function Game() {
       );
     }
     setChallenge(result);
-    setCurrentTime(0);
     inputRef.current.focus();
     setIsDisabled(false);
     setInputField("");
@@ -51,7 +59,7 @@ function Game() {
         setBestTime(UserBestTime);
       }
     } catch (e) {
-      localStorage.setItem("UserBestTime", JSON.stringify(0.0));
+      localStorage.setItem("UserBestTime", JSON.stringify(0));
     }
   }, []);
 
@@ -62,9 +70,22 @@ function Game() {
     }
   }, [IsDisabled]);
 
+  useEffect(() => {
+    if (Counter === CHALLENGE_LENGTH) {
+      setIsDisabled(true);
+    }
+  }, [Counter]);
+
+  useEffect(() => {
+    if (Challenge[Challenge.length - 1] === "Success !" && !IsRunning) {
+      confettiReward();
+    }
+  }, [Challenge, IsRunning]);
+
   //function to  reset state values and start a new game
   const resetData = () => {
-    setCurrentTime(0);
+    setIsRunning(false);
+    setTime(0);
     setCounter(0);
     startGame();
   };
@@ -75,20 +96,18 @@ function Game() {
       setBestTime(timeinseconds);
       localStorage.setItem("UserBestTime", JSON.stringify(timeinseconds));
     }
-    setTimeTaken(timeinseconds);
   };
 
   const handleKey = (e) => {
-    if (CurrentTime === 0) {
-      setCurrentTime(performance.now());
+    if (!IsDisabled) {
+      setTime(0);
+      setIsRunning(true);
     }
-    if (Counter === CHALLENGE_LENGTH) {
-      setIsDisabled(true);
-    } else if (e.key.toUpperCase() === Challenge[Counter]) {
+
+    if (e.key.toUpperCase() === Challenge[Counter]) {
       if (Counter === CHALLENGE_LENGTH - 1) {
-        const Timetaken = performance.now() - CurrentTime;
-        handleTimeTaken(Timetaken);
-        confettiReward();
+        setIsRunning(false);
+        handleTimeTaken(Time);
         setChallenge((Challenge) => [...Challenge, "Success !"]);
       }
       setCounter(Counter + 1);
@@ -104,17 +123,26 @@ function Game() {
     setInputField(e.target.value.toUpperCase());
   };
 
-  console.log(Challenge);
   return (
     <div className="wrapper">
-      <div className="alphabet-container">
-        <h1 id="rewardId">{Challenge[Counter]}</h1>
+      <div id="rewardId" className="alphabet-container">
+        <h1>{Challenge[Counter]}</h1>
       </div>
       <div className="stats-container">
-        <p className="time-taken">Time: {Timetaken} s </p>
-        <p>my best time: {BestTime} s!</p>
+        <p className="time-taken">
+          <span>
+            time: {("0" + Math.floor((Time / 60000) % 60)).slice(-2)}:
+          </span>
+          <span>{("0" + Math.floor((Time / 1000) % 60)).slice(-2)}:</span>
+          <span>{("0" + ((Time / 10) % 100)).slice(-2)} s</span>
+        </p>
+        <p>my best Time: {BestTime} s!</p>
       </div>
-      <span className={"disabled-text" + (IsDisabled ? "" : " invisible")}>
+      <span
+        className={
+          "disabled-text" + (IsDisabled && IsRunning ? "" : " invisible")
+        }
+      >
         Incorrect
       </span>
       <div className="user-input-container">
